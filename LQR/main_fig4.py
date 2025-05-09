@@ -45,7 +45,7 @@ Acl_pc = Agpc - Bgpc @ K_big
 # 初期状態 x(0)
 x0 = np.zeros([p_terms*n]) # p_terms*nと同じ次元
 initial_list = [1.0, 1.0, 1.0, 1.0, 1.0]
-for i in range(p_terms):
+for i in range(n):
     x0[i*(p_terms)] = initial_list[i]
 # 時間設定
 t_span = (0, 20)  # 0〜10秒
