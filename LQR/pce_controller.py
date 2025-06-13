@@ -50,9 +50,9 @@ class PCEController:
         # ルジャンドル多項式の生成
         Pi, Pj, Pk = legendre(i), legendre(j), legendre(k)
         # 積分対象の関数
-        integrand = lambda x: Pi(x) * Pj(x) * Pk(x)
+        integrand = lambda x: Pi(x) * Pj(x) * Pk(x) /2 # 一様分布の確率密度関数をかける
         # 区間 [-1, 1] で数値積分
-        result, _ = quad(integrand, -1, 1)
+        result, _ = quad(integrand, -1, 1) / 2
         return result
 
     def gpc_matrix(self, coeffs_func, rows, cols):
@@ -65,7 +65,7 @@ class PCEController:
                 Phi = np.zeros((self.p_terms, self.p_terms, self.p_terms))
                 for k in range(self.p_terms):
                     for i in range(self.p_terms):
-                        norm = 2 / (2 * i + 1)
+                        norm = 1 / (2 * i + 1)
                         for j in range(i, self.p_terms):
                             Phi[i, j, k] = self.legendre_inner_product(i, j, k) / norm
                     Phi_diag = np.diag(Phi[:, :, k])
@@ -87,7 +87,7 @@ class PCEController:
                 
                 for k in range(self.p_terms):
                     for i in range(self.p_terms):
-                        norm = 2/(2*i + 1)
+                        norm = 1/(2*i + 1)
                         for j in range(i, self.p_terms):
                             Phi[i,j,k] = self.legendre_inner_product(i, j, k) / norm
                             # print(i,j,k, '=', Phi[i,j,k])
@@ -115,7 +115,7 @@ class PCEController:
                 
                 for k in range(self.p_terms):
                     for i in range(self.p_terms):
-                        norm = 2/(2*i + 1)
+                        norm = 1/(2*i + 1)
                         for j in range(i, self.p_terms):
                             Phi[i,j,k] = self.legendre_inner_product(i, j, k) / norm
                             # print(i,j,k, '=', Phi[i,j,k])

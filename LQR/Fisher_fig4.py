@@ -202,7 +202,7 @@ mean_alpha = sol.y[p_terms]
 var_alpha  = np.zeros_like(sol.y[p_terms])
 for i in range(1, p_terms):
     norm = 2 / (2*i + 1)  # Legendreの内積
-    var_alpha += sol.y[i+p_terms] * norm
+    var_alpha += (sol.y[i+p_terms]**2) * norm
 
 eigs_mc, mean_mc, var_mc = simulate_mc(initial_list=initial_list, t_span=t_span, t_eval=t_eval)
 

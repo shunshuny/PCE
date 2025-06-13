@@ -65,14 +65,14 @@ for i in range(1, p_terms):
     var_alpha += (sol.y[i+p_terms]**2) * norm
 
 # モンテカルロで実装
-eigs_mc, mean_mc, var_mc = controller.simulate_mc(1000, initial_list, t_span, t_eval)
+# eigs_mc, mean_mc, var_mc = controller.simulate_mc(1000, initial_list, t_span, t_eval)
 
 plt.plot(sol.t, mean_alpha, label="Mean", color="blue")
 plt.fill_between(sol.t, mean_alpha - np.sqrt(var_alpha), mean_alpha + np.sqrt(var_alpha), alpha=0.3, color="blue", label="±1σ")
 
-plt.plot(t_eval, mean_mc[1], label="MC Mean", color="red", linestyle="--")
-plt.fill_between(t_eval, mean_mc[1] - np.sqrt(var_mc[1]), mean_mc[1] + np.sqrt(var_mc[1]),
-                 alpha=0.3, color="red", label="MC ±1σ")
+# plt.plot(t_eval, mean_mc[1], label="MC Mean", color="red", linestyle="--")
+# plt.fill_between(t_eval, mean_mc[1] - np.sqrt(var_mc[1]), mean_mc[1] + np.sqrt(var_mc[1]),
+#                  alpha=0.3, color="red", label="MC ±1σ")
 
 plt.xlabel("Time [s]")
 plt.ylabel("State")

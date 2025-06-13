@@ -48,7 +48,7 @@ def legendre_inner_product(i, j, k):
     P_k = legendre(k)
 
     # 積分対象の関数
-    integrand = lambda x: P_i(x) * P_j(x) * P_k(x)
+    integrand = lambda x: P_i(x) * P_j(x) * P_k(x) / 2  # 一様分布の確率密度関数をかける
 
     # 区間 [-1, 1] で数値積分
     result, _ = quad(integrand, -1, 1)
@@ -62,7 +62,7 @@ def A_delta(delta):
 def B_delta(delta):
     return np.array([[1], [1]])
 
-p_order = 10  # 10th order => 11 terms (0 to 10)
+p_order = 2  # 10th order => 11 terms (0 to 10)
 p_terms = p_order + 1
 n = A_delta(0.0).shape[0] # Aの次数を取得
 m = B_delta(0.0).shape[1] # Bの列数を取得
@@ -77,13 +77,13 @@ def gpc_A_matrix(): # Aが一般の行列
             
             for k in range(p_terms):
                 for i in range(p_terms):
-                    norm = 2/(2*i + 1)
+                    norm = 1/(2*i + 1)
                     for j in range(i, p_terms):
                         Phi[i,j,k] = legendre_inner_product(i, j, k) / norm
                         # print(i,j,k, '=', Phi[i,j,k])
                 Phi_diag = np.diag(Phi[:,:,k])
                 Phi[:,:,k] = Phi[:,:,k] + Phi[:,:,k].T - np.diag(Phi_diag)
-                # print(Phi[:,:,k])
+                # print(f"phi{k}={Phi[:,:,k]}")
             # print(Phi[:,:,0])
             coeffes_all = cal_coeffs_A(p_order)
             coeffes = coeffes_all[s,t]
@@ -110,7 +110,7 @@ def gpc_B_matrix(): # Aが一般の行列
             
             for k in range(p_terms):
                 for i in range(p_terms):
-                    norm = 2/(2*i + 1)
+                    norm = 1/(2*i + 1)
                     for j in range(i, p_terms):
                         Phi[i,j,k] = legendre_inner_product(i, j, k) / norm
                         # print(i,j,k, '=', Phi[i,j,k])
@@ -130,7 +130,8 @@ def gpc_B_matrix(): # Aが一般の行列
 
 Agpc = gpc_A_matrix()
 Bgpc = gpc_B_matrix()
-# print(Bgpc)
+print(Agpc)
+print(Bgpc)
 
 Q = 2*np.eye(n)
 R = np.eye(m)
@@ -190,7 +191,7 @@ plt.xlim([-6, 2])
 plt.ylim([-5, 5])
 plt.show()
 '''
-
+'''
 # 微分方程式を解く
 # 初期状態 x(0)
 x0 = np.zeros([p_terms*n]) # p_terms*nと同じ次元
@@ -235,3 +236,4 @@ axs[1].legend(); axs[1].set_title("State 2")
 
 plt.tight_layout()  # レイアウト自動調整
 plt.show()
+'''
