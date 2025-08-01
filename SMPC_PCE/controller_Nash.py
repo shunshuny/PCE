@@ -90,13 +90,12 @@ class PCEController:
             for t in range(cols):
                 Ggpc_st = np.zeros((self.p_terms, self.p_terms))
                 Phi = np.zeros((self.p_terms, self.p_terms, self.p_terms))
+                ## ここの計算Automaticaの論文間違っているので注意！こっちが正しい。
                 for k in range(self.p_terms):
                     for i in range(self.p_terms):
-                        norm = 2 / (2 * i + 1)
-                        for j in range(i, self.p_terms):
+                        for j in range(self.p_terms):
+                            norm = 2 / (2 * i + 1)
                             Phi[i, j, k] = self.legendre_inner_product(i, j, k) / norm
-                    Phi_diag = np.diag(Phi[:, :, k])
-                    Phi[:, :, k] = Phi[:, :, k] + Phi[:, :, k].T - np.diag(Phi_diag)
                 coeffes = coeffes_all[s, t]
                 for i in range(self.p_terms):
                     Ggpc_st += coeffes[i] * Phi[:, :, i]
@@ -218,7 +217,7 @@ class PCEController:
         n = A.shape[0]
         P1 = P2 = np.zeros((n, n))  # 初期解
 
-        R11_inv = inv(R11); R12_inv = inv(R12); R21_inv = inv(R21); R22_inv = inv(R22)  
+        R11_inv = inv(R11); R22_inv = inv(R22)  
         S1 = B1 @ R11_inv @ B1.T; S2 = B2 @ R22_inv @ B2.T
         G1 = B1 @ R11_inv @ R21 @ R11_inv @ B1.T; G2 = B2 @ R22_inv @ R12 @ R22_inv @ B2.T 
 
