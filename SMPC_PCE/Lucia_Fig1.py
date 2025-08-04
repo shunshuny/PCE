@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 from pce_controller import PCEController
 import cvxpy as cp
+import japanize_matplotlib
 
 # システム定義とGPC行列の構築
 def A_delta(delta):
@@ -71,7 +72,7 @@ for i in range(p_terms):
     x0[i*(p_terms)] = initial_list[i]
 
 # Prediction horizon
-N = 10
+N = 30
 nx = n*p_terms
 nu = m*p_terms
 
@@ -106,12 +107,14 @@ for k in range(N):
     # V5 = controller.var_x(x5)
     # chance_constraint_1 = 4*((mean_x2 + b_1)*(b_1 - mean_x2) - V2)/((2*b_1)**2)
     # chance_constraint_2 = 4*((mean_x5 + b_2)*(b_2 - mean_x5) - V5)/((2*b_2)**2)
-    constraints += [X[1*p_terms, k] <= 0.346]
-    constraints += [X[4*p_terms, k] <= 0.262]
-    # constraints += [-0.346 = X[1*p_terms, k]]
-    # constraints += [-0.262 = X[4*p_terms, k]]
+    constraints += [-0.346 <= X[1*p_terms, k], X[1*p_terms, k] <= 0.346]
+    constraints += [-0.262 <= X[4*p_terms, k], X[4*p_terms, k] <= 0.262]
     constraints += [H_big[0] @ U[:, k] <= h_big]
     constraints += [H_big[1] @ U[:, k] <= h_big]
+
+# 終端の状態制約
+constraints += [-0.346 <= X[1*p_terms, N], X[1*p_terms, N] <= 0.346]
+constraints += [-0.262 <= X[4*p_terms, N], X[4*p_terms, N] <= 0.262]
 
 
 # Solve optimization
@@ -121,3 +124,36 @@ print(problem.status)
 # Results
 print('Optimal Control Inputs:', U.value)
 print('Optimal State Trajectory:', X.value)
+
+# 平均と分散の計算
+mean_x2 = X.value[p_terms, :]
+var_x2  = np.zeros_like(X.value[p_terms, :])
+for i in range(1, p_terms):
+    norm = 2 / (2*i + 1)  # Legendreの内積
+    var_x2 += (X.value[i+p_terms, :]**2) * norm
+
+# ==== シミュレーションの可視化 ====
+time_steps = np.arange(N + 1)
+plt.figure(figsize=(10, 4))
+
+# 状態遷移のプロット
+plt.subplot(1, 2, 1)
+plt.plot(time_steps, mean_x2, label='x2')
+plt.fill_between(time_steps, mean_x2 - np.sqrt(var_x2), mean_x2 + np.sqrt(var_x2), alpha=0.3, color="blue", label="±1σ")
+# plt.plot(time_steps, X.value[3*p_terms, :], label='x4')
+plt.title('状態の推移')
+plt.xlabel('時間ステップ')
+plt.grid(True)
+plt.legend()
+
+# 入力のプロット
+
+plt.subplot(1, 2, 2)
+plt.plot(time_steps[:-1], U.value[0, :], label='入力 (u)')
+plt.title('入力の推移')
+plt.xlabel('時間ステップ')
+plt.grid(True)
+plt.legend()
+
+plt.tight_layout()
+plt.show()

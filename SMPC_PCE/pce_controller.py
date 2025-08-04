@@ -37,7 +37,7 @@ class PCEController:
     def cal_coeffs_B(self):
         # BのgPC係数を計算
         N = 100
-        x = np.random.uniform(0.5, 1.5, N)
+        x = np.random.uniform(-1, 1, N)
         coeffs = np.zeros((self.n, self.m, self.p_terms))
         for i in range(self.n):
             for j in range(self.m):
@@ -52,7 +52,7 @@ class PCEController:
         # 積分対象の関数
         integrand = lambda x: Pi(x) * Pj(x) * Pk(x)
         # 区間 [a, b] で数値積分
-        result, _ = quad(integrand, 0.5, 1.5)
+        result, _ = quad(integrand, -1, 1)
         return result
 
     def gpc_matrix(self, coeffs_func, rows, cols):

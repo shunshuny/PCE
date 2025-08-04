@@ -77,7 +77,7 @@ class PCEController:
         # ルジャンドル多項式の生成
         Pi, Pj, Pk = legendre(i), legendre(j), legendre(k)
         # 積分対象の関数
-        integrand = lambda x: Pi(x) * Pj(x) * Pk(x)
+        integrand = lambda x: Pi(x) * Pj(x) * Pk(x) / 2
         # 区間 [a, b] で数値積分
         result, _ = quad(integrand, -1, 1)
         return result
@@ -94,7 +94,7 @@ class PCEController:
                 for k in range(self.p_terms):
                     for i in range(self.p_terms):
                         for j in range(self.p_terms):
-                            norm = 2 / (2 * i + 1)
+                            norm = 1 / (2 * i + 1)
                             Phi[i, j, k] = self.legendre_inner_product(i, j, k) / norm
                 coeffes = coeffes_all[s, t]
                 for i in range(self.p_terms):
@@ -113,14 +113,9 @@ class PCEController:
                 
                 for k in range(self.p_terms):
                     for i in range(self.p_terms):
-                        norm = 2/(2*i + 1)
-                        for j in range(i, self.p_terms):
+                        for j in range(self.p_terms):
+                            norm = 1/(2*i + 1)
                             Phi[i,j,k] = self.legendre_inner_product(i, j, k) / norm
-                            # print(i,j,k, '=', Phi[i,j,k])
-                    Phi_diag = np.diag(Phi[:,:,k])
-                    Phi[:,:,k] = Phi[:,:,k] + Phi[:,:,k].T - np.diag(Phi_diag)
-                    # print(Phi[:,:,k])
-                # print(Phi[:,:,0])
                 coeffes_all = self.cal_coeffs_A()
                 coeffes = coeffes_all[s,t]
                 # print(coeffes)
@@ -138,17 +133,11 @@ class PCEController:
             for t in range(self.m):
                 Bgpc_st = np.zeros((self.p_terms, self.p_terms))
                 Phi = np.zeros((self.p_terms, self.p_terms, self.p_terms))
-                
                 for k in range(self.p_terms):
                     for i in range(self.p_terms):
-                        norm = 2/(2*i + 1)
                         for j in range(i, self.p_terms):
+                            norm = 1/(2*i + 1)
                             Phi[i,j,k] = self.legendre_inner_product(i, j, k) / norm
-                            # print(i,j,k, '=', Phi[i,j,k])
-                    Phi_diag = np.diag(Phi[:,:,k])
-                    Phi[:,:,k] = Phi[:,:,k] + Phi[:,:,k].T - np.diag(Phi_diag)
-                    # print(Phi[:,:,k])
-                # print(Phi[:,:,0])
                 coeffes_all = self.cal_coeffs_B()
                 coeffes = coeffes_all[s,t]
                 # print(coeffes)
